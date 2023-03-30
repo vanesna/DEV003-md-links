@@ -1,11 +1,28 @@
 
 const path = require('path'); // importar ruta
 const fs = require('fs'); // file system
+const fetch = require('node-fetch');
+const { resolve } = require('path');
+const { dir } = require('console');
 
-const route = 'prueba.md';
-// const route = 'C:/Users/vanne/Laboratoria/DEV003-md-links/';
+// const route = 'prueba.md';
+const route = 'C:\\Users\\vanne\\Laboratoria\\DEV003-md-links\\prueba';
+// const route = 'C:\Users\vanne\Laboratoria\DEV003-md-links\prueba.md';
 const data = '[Markdown](https://es.wikipedia.org/wiki/Markdown) es un lenguaje de marcado [Google](http://google.com/)';
 // const data = 'es un lenguaje de marcado';
+const arrayLinks = [
+  {
+    href: 'https://es.wikipedia.org/wiki/Markdown',
+    text: 'Markdown',
+    file: 'C:\\Users\\vanne\\Laboratoria\\DEV003-md-links\\README.md'
+  },
+  {
+    href: 'https://github.com/kenruizinoue/tt-node-fetch-ejemplo/blob/app.js',
+    text: 'Github',
+    file: 'C:\\Users\\vanne\\Laboratoria\\DEV003-md-links\\README.md'
+  },]
+
+
 
 // verifica que la ruta existe
 const pathExists = (filePath) => {
@@ -20,6 +37,16 @@ const isAbsolute = (filePath) => {
 // convierte a absoluta
 const toAbsolute = (filePath) => {
   return path.resolve(filePath);
+}
+
+// validar ruta
+const validatePath = (filePath) => {
+  if (isAbsolute(filePath) === false) {
+    return toAbsolute(filePath);
+  }
+  else {
+    return filePath;
+  }
 }
 
 // valida si es un directorio
@@ -64,43 +91,159 @@ const getLinks = (data, filePath) => {
   const arrayLinks = [];
   const links = data.match(regExp);
   if (links) {
-    for(let i = 0; i < links.length; i++){
+    for (let i = 0; i < links.length; i++) {
       arrayLinks.push({
         href: links[i].match(regExpHref).join(),
-        text: links[i].match(regExpText).join().slice(1,-1),
-        file: toAbsolute(filePath),
+        text: links[i].match(regExpText).join().slice(1, -1),
+        file: filePath,
       })
     }
   }
-  else{
+  else {
     console.log('Links do not exist')
   }
   return arrayLinks;
 }
 
+// const getLinks = (filePath) => {
+//   return new Promise((resolve) => {
+//     let arrayLinks = [];
+//     const dataReaded = readDoc(filePath);
+//     dataReaded.then((result) => {
+//       const links = result.match(regExp);
+//       if (links) {
+//         for (let i = 0; i < links.length; i++) {
+//           arrayLinks.push({
+//             href: links[i].match(regExpHref).join(),
+//             text: links[i].match(regExpText).join().slice(1, -1),
+//             file: toAbsolute(filePath),
+//           }); //arrayLinks.push(proLinks);
+//         }; // console.log('arryLinks: ', arrayLinks);  
+//       };
+//       resolve(arrayLinks);
+//     })
+//       .catch((error) => {
+//         arrayLinks = [];
+//         resolve(arrayLinks);
+//       });
+//   });
+// };
 
-module.exports = {
-  pathExists, isAbsolute, toAbsolute, isFile, isMD, readDoc, getLinks,
+
+const getStatus = (array) => {
+  return new Promise((resolve) => {
+    let arrayStatus = [];
+    for (let i = 0; i < array.length; i++) {
+      fetch(array[i].href)
+        .then((response) => {
+          const objLinks = {
+            href: array[i].href,
+            text: array[i].text,
+            file: array[i].file,
+            status: response.status,
+            statusText: response.status >= 200 && response.status <= 299 ? "ok" : "fail",
+          }
+          arrayStatus.push(objLinks);
+          if (arrayStatus.length === array.length) {
+            resolve(arrayStatus);
+          }
+          // console.log('arrayLinks', arrayStatus);
+          // return arrayStatus;
+        })
+        .catch((err) => {
+          const objLinks = {
+            href: array[i].href,
+            text: array[i].text,
+            file: array[i].file,
+            status: 'Error ' + err,
+            statusText: 'fail',
+          };
+          arrayStatus.push(objLinks);
+          //console.log('arrayLinks', arrayStatus);
+          //return arrayStatus;
+          if (arrayStatus.length === array.length) {
+            resolve(arrayStatus);
+          }
+        });
+      // resolve(arrayStatus);
+    };
+  });
+};
+
+// console.log(getStatus(arrayLinks));
+
+// Leer directorio
+
+const readDir = (filePath) => {
+  return fs.readdirSync(filePath);
 }
 
+//console.log('read dir', readDir(route));
 
-// console.log('path exists? ', pathExists(route));
-// console.log('absolute path? ', isAbsolute(route));
-// console.log('absolute path ', toAbsolute(route));
-// console.log('is directory? ', isDirectory(route));
-// console.log('is file? ', isFile(route));
-// console.log('is md? ', isMD(route));
-// readDoc(route).then((result) => console.log(result));
-// readDoc(route).catch(error => console.log(error));
+const joinFilewithPath = (route) => {
+  return readDir(route).map((index) => path.join(route, index));
+};
 
-const readfilee = readDoc(route)
+//console.log('join path', joinFilewithPath(route));
 
-readfilee.then(result => {
-  console.log('La promise funciona:', result)
-}).catch(error => {
-  console.log('La promise no funciona', error)
-})
+// 
+const readAll = (filePath) => {
+  let arrayAllFiles = [];
+  let absPath = validatePath(filePath);
+  //console.log(absPath)
+
+  if (isFile(absPath) && isMD(absPath)) {
+    arrayAllFiles.push(absPath);
+
+  }
+  else if (isDirectory(absPath) && readDir(absPath).length > 0) {
+    const files = joinFilewithPath(absPath);
+    for (let i = 0; i < files.length; i++) {
+      const newPath = readAll(files[i]);
+      arrayAllFiles = arrayAllFiles.concat(newPath);
+    }
+  }
+  return arrayAllFiles;
+};
+
+console.log('read all', readAll(route));
+
+// fetch('https://github.com/kenruizinoue/tt-node-fetch-ejemplo/blob/app.js').then((res) => {
+// console.log(res);
+// })
+
+module.exports = {
+  pathExists, isAbsolute, toAbsolute, isFile, isDirectory, isMD, readDoc, getLinks, getStatus, readDir,
+}
+
+// console.log('prueba', toAbsolute(route));
+
+
+// readfilee.then(result => {
+//   console.log('La promise funciona:', result)
+// }).catch(error => {
+//   console.log('La promise no funciona', error)
+// })
 
 
 
-console.log('links', getLinks(data, route));
+
+
+
+// console.log('Obteniendo status', getStatus(arrayLinks));
+// console.log('leyendo directorio', readDir(route));
+
+// getStatus(arrayLinks).then(res => {
+//   console.log('obteniendo status', res);
+// })
+
+//const resultado = getLinks(route);
+//const datas = readDoc(resultado).then((response))
+// console.log('datas: ', datas);
+//console.log('resultado: ', resultado);
+// console.log('get links', getLinks(data,resultado));
+
+// getStatus(arrayLinks)
+//   .then((response) => console.log(response))
+//   .catch((error) => console.log(error))
+
