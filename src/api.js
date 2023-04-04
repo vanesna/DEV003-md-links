@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 const { resolve } = require('path');
 const { dir } = require('console');
 
-// const route = 'prueba.md';
-const route = 'C:\\Users\\vanne\\Laboratoria\\DEV003-md-links\\prueba';
+ const route = 'prueba.md';
+// const route = 'C:\\Users\\vanne\\Laboratoria\\DEV003-md-links\\prueba';
 // const route = 'C:\Users\vanne\Laboratoria\DEV003-md-links\prueba.md';
 const data = '[Markdown](https://es.wikipedia.org/wiki/Markdown) es un lenguaje de marcado [Google](http://google.com/)';
 // const data = 'es un lenguaje de marcado';
@@ -69,16 +69,21 @@ const isMD = (filePath) => {
 }
 
 // leer archivo
-const readDoc = (filePath) => {
+const readDoc = (filePath) => {  
   return new Promise(function (resolve, reject) {
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
         reject('error');
       }
-      resolve(data);
+      resolve(data); //string
     });
   })
 }
+
+
+// readDoc(route)
+// .then((res) => console.log(res))
+// .catch((error) => console.log(error))
 
 // expresion regular 
 const regExp = /\[([\w\s.]+)\]\((((http|https):\/\/)[\w./?=-]+)\)/gm;
@@ -105,31 +110,7 @@ const getLinks = (data, filePath) => {
   return arrayLinks;
 }
 
-// const getLinks = (filePath) => {
-//   return new Promise((resolve) => {
-//     let arrayLinks = [];
-//     const dataReaded = readDoc(filePath);
-//     dataReaded.then((result) => {
-//       const links = result.match(regExp);
-//       if (links) {
-//         for (let i = 0; i < links.length; i++) {
-//           arrayLinks.push({
-//             href: links[i].match(regExpHref).join(),
-//             text: links[i].match(regExpText).join().slice(1, -1),
-//             file: toAbsolute(filePath),
-//           }); //arrayLinks.push(proLinks);
-//         }; // console.log('arryLinks: ', arrayLinks);  
-//       };
-//       resolve(arrayLinks);
-//     })
-//       .catch((error) => {
-//         arrayLinks = [];
-//         resolve(arrayLinks);
-//       });
-//   });
-// };
-
-
+//Obtener status de los links
 const getStatus = (array) => {
   return new Promise((resolve) => {
     let arrayStatus = [];
@@ -173,20 +154,16 @@ const getStatus = (array) => {
 // console.log(getStatus(arrayLinks));
 
 // Leer directorio
-
 const readDir = (filePath) => {
   return fs.readdirSync(filePath);
 }
 
-//console.log('read dir', readDir(route));
-
+//Juntar la ruta
 const joinFilewithPath = (route) => {
   return readDir(route).map((index) => path.join(route, index));
 };
 
-//console.log('join path', joinFilewithPath(route));
-
-// 
+// Array con todos los md de las carpetas
 const readAll = (filePath) => {
   let arrayAllFiles = [];
   let absPath = validatePath(filePath);
@@ -206,44 +183,14 @@ const readAll = (filePath) => {
   return arrayAllFiles;
 };
 
-console.log('read all', readAll(route));
-
-// fetch('https://github.com/kenruizinoue/tt-node-fetch-ejemplo/blob/app.js').then((res) => {
-// console.log(res);
-// })
-
 module.exports = {
-  pathExists, isAbsolute, toAbsolute, isFile, isDirectory, isMD, readDoc, getLinks, getStatus, readDir,
+  pathExists, isAbsolute, toAbsolute, validatePath, isFile, isDirectory, isMD, readDoc, getLinks, getStatus, readDir, readAll,
 }
 
-// console.log('prueba', toAbsolute(route));
+// const resultado = '../DEV003-md-links/prueba1/prueba2/prueba.md';
+// readDoc(resultado)
+//     .then((data) => console.log(getLinks(data,resultado)))
+//     .catch((error) => console.log(error))
 
 
-// readfilee.then(result => {
-//   console.log('La promise funciona:', result)
-// }).catch(error => {
-//   console.log('La promise no funciona', error)
-// })
-
-
-
-
-
-
-// console.log('Obteniendo status', getStatus(arrayLinks));
-// console.log('leyendo directorio', readDir(route));
-
-// getStatus(arrayLinks).then(res => {
-//   console.log('obteniendo status', res);
-// })
-
-//const resultado = getLinks(route);
-//const datas = readDoc(resultado).then((response))
-// console.log('datas: ', datas);
-//console.log('resultado: ', resultado);
-// console.log('get links', getLinks(data,resultado));
-
-// getStatus(arrayLinks)
-//   .then((response) => console.log(response))
-//   .catch((error) => console.log(error))
 
