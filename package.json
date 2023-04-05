@@ -2,7 +2,7 @@
   "name": "vanesn-md-links",
   "version": "0.1.0",
   "description": "Linea de comando que verifica rutas de un archivo markdown",
-  "main": "index.js",
+  "main": "./src/cli.js",
   "keywords": [
     "nodejs",
     "markdown",
@@ -11,6 +11,9 @@
   ],
   "engines": {
     "node": ">=16.x"
+  },
+  "bin": {
+    "md-links": "./src/cli.js"
   },
   "license": "ISC",
   "homepage": "https://github.com/vanesna/DEV003-md-links.git",

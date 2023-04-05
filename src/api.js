@@ -184,7 +184,19 @@ const readAll = (filePath) => {
 };
 
 module.exports = {
-  pathExists, isAbsolute, toAbsolute, validatePath, isFile, isDirectory, isMD, readDoc, getLinks, getStatus, readDir, readAll,
+  pathExists, 
+  isAbsolute, 
+  toAbsolute, 
+  validatePath, 
+  isFile, 
+  isDirectory, 
+  isMD, 
+  readDoc, 
+  getLinks, 
+  getStatus, 
+  readDir, 
+  readAll,
+  joinFilewithPath,
 }
 
 // const resultado = '../DEV003-md-links/prueba1/prueba2/prueba.md';
