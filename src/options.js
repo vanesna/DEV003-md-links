@@ -32,17 +32,23 @@ const totalLinks = (array) => {
 //console.log(totalLinks(ArrayResult));
 
 //Links unicos
-const uniqueLinks = (array) => { 
-   
+const uniqueLinks = (array) => {
+
+    const arrayLinks = (array.map((array) => array.href));  //arreglo de links
+    const arrayUnique = arrayLinks.filter((link, index) => { 
+        return arrayLinks.indexOf(link) === index;  //comprueba si un elemento ya fue agregrado
+    })
+    return 'Unique: ' + arrayUnique.length;
 }
 
+//console.log(uniqueLinks(ArrayResult));
 
 //Links rotos
-const brokenLinks = (arrayLinks) => { 
-    const broLinks = arrayLinks.filter(array => array.statusText === 'fail'); //arreglo
+const brokenLinks = (arrayLinks) => {
+    const broLinks = arrayLinks.filter(array => array.statusText === 'fail'); //arreglo de objetos con status fail
     return 'Broken: ' + broLinks.length;
 }
 
 //console.log(brokenLinks(ArrayResult));
 
-module.exports = {totalLinks, brokenLinks}
+module.exports = { totalLinks, uniqueLinks, brokenLinks } 

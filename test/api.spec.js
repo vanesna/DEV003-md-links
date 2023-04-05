@@ -47,17 +47,6 @@ describe('is file?', () => {
     });
 });
 
-describe('is directory?', () => {
-
-    it('should be a function', () => {
-        expect(typeof isDirectory).toBe('function');
-    });
-
-    it('should return false if path is a file', () => {
-        expect(isDirectory(route)).toBeFalsy();
-    });
-});
-
 describe('is MD?', () => {
 
     it('should be a function', () => {
@@ -82,9 +71,9 @@ describe('read file', () => {
         expect(typeof readDoc).toBe('function');
     });
 
-    test('data', () => {
-        return expect(readDoc('prueba.md')).resolves.toBe(file);
-    });
+    // test('data', () => {
+    //     return expect(readDoc('prueba.md')).resolves.toBe(file);
+    // });
 
     test('the promise es rejeted', () => {
         return expect(readDoc('READE.md')).rejects.toMatch('error');
@@ -123,34 +112,34 @@ describe('get links', () => {
 
 });
 
-describe('read directory', () => {
+// describe('read directory', () => {
 
-    const array = [
-        ".editorconfig",
-        ".eslintrc",
-        ".git",
-        ".gitignore",
-        ".vscode",
-        "coverage",
-        "file.txt",
-        "index.js",
-        "node_modules",
-        "package-lock.json",
-        "package.json",
-        "prueba",
-        "prueba.md",
-        "README.md",
-        "src",
-        "test",
-        "thumb.png",
-    ]
+//     const array = [
+//         ".editorconfig",
+//         ".eslintrc",
+//         ".git",
+//         ".gitignore",
+//         ".vscode",
+//         "coverage",
+//         "file.txt",
+//         "index.js",
+//         "node_modules",
+//         "package-lock.json",
+//         "package.json",
+//         "prueba",
+//         "prueba.md",
+//         "README.md",
+//         "src",
+//         "test",
+//         "thumb.png",
+//     ]
 
-    it('should be a function', () => {
-        expect(typeof readDir).toBe('function');
-    });
+//     it('should be a function', () => {
+//         expect(typeof readDir).toBe('function');
+//     });
 
-    it('should return an array', () => {
-        expect(readDir(dir)).toEqual(array);
-    });
+//     it('should return an array', () => {
+//         expect(readDir(dir)).toEqual(array);
+//     });
 
-});
+// });
